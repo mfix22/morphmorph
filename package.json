@@ -1,0 +1,38 @@
+{
+  "name": "maplib",
+  "version": "0.0.1",
+  "description": "Mapping, filtering, transforming, and morphing for your objects",
+  "main": "index.js",
+  "scripts": {
+    "precommit": "lint-staged",
+    "lint": "xo",
+    "test": "jest"
+  },
+  "keywords": [
+    "transform",
+    "filter",
+    "objects",
+    "morph",
+    "declarative",
+    "map"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "eslint-config-prettier": "^2.3.0",
+    "jest": "^20.0.4",
+    "prettier": "^1.5.3",
+    "xo": "^0.18.2"
+  },
+  "xo": {
+    "extends": "prettier",
+    "env": ["node", "jest"]
+  },
+  "lint-staged": {
+    "*.js": [
+      "npm run lint",
+      "prettier --single-quote --no-semi --write",
+      "git add"
+    ]
+  }
+}
