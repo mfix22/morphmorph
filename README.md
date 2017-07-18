@@ -29,8 +29,8 @@ const transformation = mapper.map(mappings, old)
 You can pass in a config object to `Mapper` to create your own mapping system:
 ```javascript
 const mapper = new Mapper({
-  objDelimeter: '|',
-  mapDelimeter: '->',
+  objDelimiter: '|',
+  mapDelimiter: '->',
   types: { bool: Boolean },
   preFilters: [ FILTER_NULL ],
   postFilters: [ REMOVE_PASSWORD ]
@@ -41,7 +41,7 @@ const mapper = new Mapper({
 | Field          | Type           | Default        |
 | :------------- | :------------- | :------------- |
 | `types`        | `Object`       | `{}`           |
-| `objDelimeter` | `String`       | `"."`          |
-| `mapDelimeter` | `String`       | `":"`          |
+| `objDelimiter` | `String`       | `"."`          |
+| `mapDelimiter` | `String`       | `":"`          |
 | `preFilters`   | `Array`        | `[]`           |
 | `postFilters`  | `Array`        | `[]`           |

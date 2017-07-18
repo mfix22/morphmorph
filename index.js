@@ -1,7 +1,7 @@
 const DEFAULT_CONFIG = {
   types: {},
-  objDelimeter: '.',
-  mapDelimeter: ':',
+  objDelimiter: '.',
+  mapDelimiter: ':',
   preFilters: [],
   postFilters: []
 }
@@ -9,11 +9,11 @@ const DEFAULT_CONFIG = {
 const _createRootObj = (obj, key) =>
   isNaN(parseInt(key, 10)) ? {} : Array(parseInt(key, 10))
 
-const assign = (key, delimeter = DEFAULT_CONFIG.objDelimeter) => (
+const assign = (key, delimiter = DEFAULT_CONFIG.objDelimiter) => (
   obj,
   value
 ) => {
-  key.split(delimeter).reduce((accum, key, i, array) => {
+  key.split(delimiter).reduce((accum, key, i, array) => {
     if (i === array.length - 1) accum[key] = value
     else if (!accum[key]) accum[key] = _createRootObj(accum, array[i + 1])
     return accum[key]
@@ -22,18 +22,18 @@ const assign = (key, delimeter = DEFAULT_CONFIG.objDelimeter) => (
   return obj
 }
 
-const get = (key, delimeter = DEFAULT_CONFIG.objDelimeter) => obj =>
+const get = (key, delimiter = DEFAULT_CONFIG.objDelimiter) => obj =>
   key
-    .split(delimeter)
+    .split(delimiter)
     .reduce((accum, key) => (accum ? accum[key] : undefined), obj)
 
 const compose = (...fns) => (res, ...args) =>
   fns.reverse().reduce((accum, next) => next(accum, ...args), res)
 
-const _getMapSpec = (mapping, delimeter) =>
-  (mapping.indexOf(delimeter) > -1
+const _getMapSpec = (mapping, delimiter) =>
+  (mapping.indexOf(delimiter) > -1
     ? mapping
-    : mapping + delimeter + mapping).split(delimeter)
+    : mapping + delimiter + mapping).split(delimiter)
 
 const _normalizeMapping = mapping =>
   typeof mapping === 'string' ? { field: mapping } : mapping
@@ -58,7 +58,7 @@ class Mapper {
     return mappings.map(_normalizeMapping).reduce((accum, mapping) => {
       const [alphaField, betaField] = _getMapSpec(
         mapping.field,
-        options.mapDelimeter
+        options.mapDelimiter
       )
 
       const filter = compose(
@@ -67,13 +67,13 @@ class Mapper {
         ...options.preFilters
       )
       const value = filter(
-        get(alphaField, options.objDelimeter)(curr),
+        get(alphaField, options.objDelimiter)(curr),
         mapping,
         options
       )
       return value === undefined
         ? accum
-        : assign(betaField, options.objDelimeter)(accum, value)
+        : assign(betaField, options.objDelimiter)(accum, value)
     }, next)
   }
 }
