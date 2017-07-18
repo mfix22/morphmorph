@@ -20,13 +20,11 @@
   "license": "MIT",
   "devDependencies": {
     "eslint-config-prettier": "^2.3.0",
+    "husky": "^0.14.3",
     "jest": "^20.0.4",
+    "lint-staged": "^4.0.2",
     "prettier": "^1.5.3",
     "xo": "^0.18.2"
-  },
-  "xo": {
-    "extends": "prettier",
-    "env": ["node", "jest"]
   },
   "lint-staged": {
     "*.js": [
@@ -34,5 +32,13 @@
       "prettier --single-quote --no-semi --write",
       "git add"
     ]
-  }
+  },
+  "xo": {
+    "extends": "prettier",
+    "env": [
+      "node",
+      "jest"
+    ]
+  },
+  "dependencies": {}
 }

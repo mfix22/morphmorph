@@ -12,7 +12,9 @@ it('should deeply get object fields', () => {
       }
     }
   }
-  expect(Mapper.get('really.really.really.deep')(deepObjectNesting)).toEqual('deep')
+  expect(Mapper.get('really.really.really.deep')(deepObjectNesting)).toEqual(
+    'deep'
+  )
 })
 
 it('should deeply get object fields', () => {
@@ -32,7 +34,9 @@ it('should be isomorphic', () => {
   const get = Mapper.get(complexKey)
   const set = Mapper.assign(complexKey)
 
-  expect(get(set({}, expected))).toEqual(expected)
+  const isomorph = Mapper.compose(get, set)
+
+  expect(isomorph({}, expected)).toEqual(expected)
 })
 
 it('should work with basic string mappings', () => {
@@ -41,7 +45,7 @@ it('should work with basic string mappings', () => {
     morph: false
   }
 
-  const mappings = [ 'map', 'morph' ]
+  const mappings = ['map', 'morph']
 
   const mapped = mapper.map(mappings, curr)
 
@@ -56,7 +60,7 @@ it('should filter unmapped values', () => {
     password: 'throw'
   }
 
-  const mappings = [ 'name', 'email' ]
+  const mappings = ['name', 'email']
   const mapped = mapper.map(mappings, curr)
 
   expect(mapped).toEqual({ name: 'Mike', email: 'hi@dawnlabs.io' })
@@ -72,13 +76,30 @@ it('should handle deep transformations', () => {
     now: false
   }
 
-  const mappings = [
-    'here.there.anywhere:here',
-    'now:maybe.later.never'
-  ]
+  const mappings = ['here.there.anywhere:here', 'now:maybe.later.never']
 
   expect(mapper.map(mappings, curr).here).toEqual(true)
   expect(mapper.map(mappings, curr).maybe.later.never).toEqual(false)
+})
+
+it('should allow you to compose a type function', () => {
+  const curr = { beverage: Infinity }
+
+  const ENUM = ['☕', '🍸', '🍹', '🍵', '🥛', '🍺', '🥃', '🍼', '🍷', '🍶', '🍾']
+
+  // Or you can use your favorite functional library
+  const bestBeverage = Mapper.compose(
+    index => ENUM[index],
+    key => Math.min(key, 0)
+  )
+  const mappings = [
+    {
+      field: 'beverage:coffee',
+      type: bestBeverage
+    }
+  ]
+
+  expect(mapper.map(mappings, curr).coffee).toEqual('☕')
 })
 
 it('should allow function composition for creating types', () => {
@@ -91,30 +112,33 @@ it('should allow function composition for creating types', () => {
     17: '¥'
   }
 
-  // contrived type
+  // Contrived type
   const currencyEnumFromBinary = [
     v => ENUM[v] || '$',
     v => parseInt(v, 2),
     v => v.replace(/\s+/g, '')
   ]
-  const mappings = [{
-    field: 'binary:decimal',
-    type: currencyEnumFromBinary
-  }]
+  const mappings = [
+    {
+      field: 'binary:decimal',
+      type: currencyEnumFromBinary
+    }
+  ]
 
   expect(mapper.map(mappings, curr).decimal).toEqual('¥')
 })
 
 it('should allow you to pass pre-mapping filters', () => {
   const curr = { possiblyNull: null }
-  const USE_DEFAULT = (value, field) => value == null
-    ? field.default
-    : value
+  const USE_DEFAULT = (value, field) =>
+    value === null || value === undefined ? field.default : value
 
-  const mappings = [{
-    field: 'possiblyNull:definitelyNotNull',
-    default: 'NOT TODAY!'
-  }]
+  const mappings = [
+    {
+      field: 'possiblyNull:definitelyNotNull',
+      default: 'NOT TODAY!'
+    }
+  ]
 
   const preFilterMapper = new Mapper({
     preFilters: [USE_DEFAULT]
@@ -127,7 +151,7 @@ it('should allow you to pass pre-mapping filters', () => {
 it('should allow you to pass post-mapping filters', () => {
   const curr = { possiblyNull: null }
   const USE_GLOBAL_DEFAULTS = (value, field, options) => {
-    if (value == null){
+    if (value === null || value === undefined) {
       return options.types && options.GLOBAL_DEFAULTS[field.type]
     }
     return value
@@ -137,15 +161,19 @@ it('should allow you to pass post-mapping filters', () => {
     nonNullable: 'THIS IS JUST A GLOBAL DEFAULT'
   }
 
-  const mappings = [{
-    field: 'possiblyNull:definitelyNotNull',
-    type: 'nonNullable'
-  }]
+  const mappings = [
+    {
+      field: 'possiblyNull:definitelyNotNull',
+      type: 'nonNullable'
+    }
+  ]
 
   const postFilterMapper = new Mapper({
     postFilters: [USE_GLOBAL_DEFAULTS],
     GLOBAL_DEFAULTS
   })
 
-  expect(postFilterMapper.map(mappings, curr).definitelyNotNull).toEqual('THIS IS JUST A GLOBAL DEFAULT')
+  expect(postFilterMapper.map(mappings, curr).definitelyNotNull).toEqual(
+    'THIS IS JUST A GLOBAL DEFAULT'
+  )
 })
