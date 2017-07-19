@@ -27,6 +27,17 @@ const transformation = mapper.map(mappings, old)
 
 ## Config
 You can pass in a config object to `Mapper` to create your own mapping system:
+##### Options
+
+| Field          | Type           | Default        |
+| :------------- | :------------- | :------------- |
+| `types`        | `Object`       | `{}`           |
+| `objDelimiter` | `String`       | `"."`          |
+| `mapDelimiter` | `String`       | `":"`          |
+| `preFilters`   | `Array`        | `[]`           |
+| `postFilters`  | `Array`        | `[]`           |
+
+##### Example
 ```javascript
 const mapper = new Mapper({
   objDelimiter: '|',
@@ -37,11 +48,3 @@ const mapper = new Mapper({
   // add other field to your config here
 })
 ```
-
-| Field          | Type           | Default        |
-| :------------- | :------------- | :------------- |
-| `types`        | `Object`       | `{}`           |
-| `objDelimiter` | `String`       | `"."`          |
-| `mapDelimiter` | `String`       | `":"`          |
-| `preFilters`   | `Array`        | `[]`           |
-| `postFilters`  | `Array`        | `[]`           |
