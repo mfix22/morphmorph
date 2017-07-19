@@ -39,6 +39,5 @@
       "node",
       "jest"
     ]
-  },
-  "dependencies": {}
+  }
 }
