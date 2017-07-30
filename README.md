@@ -1,5 +1,5 @@
 # MapLib
-##### Map, transform, filter, and morph your objects
+##### Isomorphic transformations. Map, transform, filter, and morph your objects
 
 ## Getting Started
 ```bash
@@ -48,3 +48,7 @@ const mapper = new Mapper({
   // add other field to your config here
 })
 ```
+
+
+## Examples
+See `test/index.spec.js` for more examples of how to use `MapLib`.

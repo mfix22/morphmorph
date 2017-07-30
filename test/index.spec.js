@@ -87,7 +87,7 @@ it('should allow you to compose a type function', () => {
 
   const ENUM = ['☕', '🍸', '🍹', '🍵', '🥛', '🍺', '🥃', '🍼', '🍷', '🍶', '🍾']
 
-  // Or you can use your favorite functional library
+  // Use, `Mapper.compose`, or your favorite functional library
   const bestBeverage = Mapper.compose(
     index => ENUM[index],
     key => Math.min(key, 0)
@@ -170,6 +170,10 @@ it('should allow you to pass post-mapping filters', () => {
 
   const postFilterMapper = new Mapper({
     postFilters: [USE_GLOBAL_DEFAULTS],
+    /**
+     * This field is not specific to this library, but allows you to build your
+     * own mapping system
+     */
     GLOBAL_DEFAULTS
   })
 
