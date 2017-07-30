@@ -69,7 +69,9 @@ class Mapper {
       const value = filter(
         get(alphaField, options.objDelimiter)(curr),
         mapping,
-        options
+        options,
+        curr,
+        accum
       )
       return value === undefined
         ? accum
