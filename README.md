@@ -1,13 +1,13 @@
-# MapLib
+# Morph Morph
 ##### Isomorphic transformations. Map, transform, filter, and morph your objects
 
 ## Getting Started
 ```bash
-$ npm i --save maplib
+$ npm i --save morphmorph
 ```
 and then
 ```javascript
-const Mapper = require('maplib')
+const Mapper = require('morphmorph')
 
 const mapper = new Mapper(/* [config] */)
 
@@ -51,4 +51,4 @@ const mapper = new Mapper({
 
 
 ## Examples
-See `test/index.spec.js` for more examples of how to use `MapLib`.
+See `test/index.spec.js` for more examples of how to use `MorphMorph`.

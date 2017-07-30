@@ -1,6 +1,6 @@
 {
-  "name": "maplib",
-  "version": "0.0.2",
+  "name": "morphmorph",
+  "version": "0.0.1",
   "description": "Mapping, filtering, transforming, and morphing for your objects",
   "main": "index.js",
   "scripts": {
