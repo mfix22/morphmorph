@@ -56,7 +56,7 @@ class Mapper {
   map(mappings, curr, next = {}) {
     const options = this.config
     return mappings.map(_normalizeMapping).reduce((accum, mapping) => {
-      const [alphaField, betaField] = _getMapSpec(
+      const [sourceField, targetField] = _getMapSpec(
         mapping.field,
         options.mapDelimiter
       )
@@ -67,7 +67,7 @@ class Mapper {
         ...options.preFilters
       )
       const value = filter(
-        get(alphaField, options.objDelimiter)(curr),
+        get(sourceField, options.objDelimiter)(curr),
         mapping,
         options,
         curr,
@@ -75,7 +75,7 @@ class Mapper {
       )
       return value === undefined
         ? accum
-        : assign(betaField, options.objDelimiter)(accum, value)
+        : assign(targetField, options.objDelimiter)(accum, value)
     }, next)
   }
 }

@@ -121,7 +121,7 @@ const mapper = new Mapper({
   types: { bool: Boolean },
   preFilters: [ FILTER_NULL ],
   postFilters: [ REMOVE_PASSWORD ]
-  // add other field to your config here
+  // add other fields to your config here
 })
 ```
 
