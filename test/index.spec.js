@@ -94,12 +94,12 @@ it('should allow you to compose a type function', () => {
   )
   const mappings = [
     {
-      field: 'beverage:coffee',
+      field: 'beverage:bestBeverage',
       type: bestBeverage
     }
   ]
 
-  expect(mapper.map(mappings, curr).coffee).toEqual('☕')
+  expect(mapper.map(mappings, curr).bestBeverage).toEqual('☕')
 })
 
 it('should allow function composition for creating types', () => {
