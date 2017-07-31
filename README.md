@@ -127,4 +127,4 @@ const mapper = new Mapper({
 
 
 ## Examples
-See `test/index.spec.js` for more examples of how to use `MorphMorph`.
+See [/examples](https://github.com/mfix22/morphmorph/tree/master/examples) or [`test/index.spec.js`](https://github.com/mfix22/morphmorph/tree/master/test/index.spec.js) for many examples of how to use `MorphMorph`.
