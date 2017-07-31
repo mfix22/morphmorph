@@ -125,6 +125,31 @@ const mapper = new Mapper({
 })
 ```
 
+## Static methods
+##### `Mapper.get`
+Method used to grab a deeply nested field from an object.
+```javascript
+const get = Mapper.get('key'/*, delimiter */)
+const field = get({ key: true })
+// -> true
+```
+##### `Mapper.assign`
+Method used to apply a deeply nested field to an object.
+```javascript
+const set = Mapper.assign('user.id'/*, delimiter */)
+const targetObject = set({}, 1)
+// -> { user: { id: 1 } }
+```
+##### `Mapper.compose`
+Method used to apply function compositions
+```javascript
+const fun1 = v => `${v}!`
+const fun2 = v => v.toUpperCase()
+const fun3 = String
+
+const exclaim = Mapper.compose(fun1, fun2, fun3)
+exclaim('hey') // -> HEY!
+```
 
 ## Examples
 See [/examples](https://github.com/mfix22/morphmorph/tree/master/examples) or [`test/index.spec.js`](https://github.com/mfix22/morphmorph/tree/master/test/index.spec.js) for many examples of how to use `MorphMorph`.
