@@ -125,6 +125,9 @@ const mapper = new Mapper({
 })
 ```
 
+## Bonus
+Dependencies: None!<br>
+Size: <1KB gzipped
 
 ## Examples
 See [/examples](https://github.com/mfix22/morphmorph/tree/master/examples) or [`test/index.spec.js`](https://github.com/mfix22/morphmorph/tree/master/test/index.spec.js) for many examples of how to use `MorphMorph`.
