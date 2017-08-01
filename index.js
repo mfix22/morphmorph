@@ -1,4 +1,4 @@
-const DEFAULT_CONFIG = {
+const DEFAULTS = {
   types: {},
   objDelimiter: '.',
   mapDelimiter: ':',
@@ -6,23 +6,20 @@ const DEFAULT_CONFIG = {
   postFilters: []
 }
 
-const _createRootObj = (obj, key) =>
+const _createRootObj = key =>
   isNaN(parseInt(key, 10)) ? {} : Array(parseInt(key, 10))
 
-const assign = (key, delimiter = DEFAULT_CONFIG.objDelimiter) => (
-  obj,
-  value
-) => {
+const assign = (key, delimiter = DEFAULTS.objDelimiter) => (obj, value) => {
   key.split(delimiter).reduce((accum, key, i, array) => {
     if (i === array.length - 1) accum[key] = value
-    else if (!accum[key]) accum[key] = _createRootObj(accum, array[i + 1])
+    else if (!accum[key]) accum[key] = _createRootObj(array[i + 1])
     return accum[key]
   }, obj)
 
   return obj
 }
 
-const get = (key, delimiter = DEFAULT_CONFIG.objDelimiter) => obj =>
+const get = (key, delimiter = DEFAULTS.objDelimiter) => obj =>
   key
     .split(delimiter)
     .reduce((accum, key) => (accum ? accum[key] : undefined), obj)
@@ -50,7 +47,7 @@ const _getMappingFilter = (mapping, types) => {
 
 class Mapper {
   constructor(options) {
-    this.config = Object.assign(DEFAULT_CONFIG, options)
+    this.config = Object.assign(DEFAULTS, options)
   }
 
   map(mappings, curr, next = {}) {
