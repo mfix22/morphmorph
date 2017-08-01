@@ -125,6 +125,7 @@ const mapper = new Mapper({
 })
 ```
 
+<<<<<<< HEAD
 ## Static methods
 ##### `Mapper.get`
 Method used to grab a deeply nested field from an object.
@@ -150,6 +151,10 @@ const fun3 = String
 const exclaim = Mapper.compose(fun1, fun2, fun3)
 exclaim('hey') // -> HEY!
 ```
+
+## Bonus
+Dependencies: None!<br>
+Size: <1KB gzipped
 
 ## Examples
 See [/examples](https://github.com/mfix22/morphmorph/tree/master/examples) or [`test/index.spec.js`](https://github.com/mfix22/morphmorph/tree/master/test/index.spec.js) for many examples of how to use `MorphMorph`.
