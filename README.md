@@ -125,7 +125,6 @@ const mapper = new Mapper({
 })
 ```
 
-<<<<<<< HEAD
 ## Static methods
 ##### `Mapper.get`
 Method used to grab a deeply nested field from an object.
