@@ -1,6 +1,10 @@
 # Morph Morph
 ##### Isomorphic transformations. Map, transform, filter, and morph your objects
 
+[![tested with jest](https://img.shields.io/badge/tested_with-jest-99424f.svg)](https://github.com/facebook/jest)
+[![linted with XO](https://img.shields.io/badge/linted_with_-XO-5ed9c7.svg)](https://github.com/sindresorhus/xo)
+[![styled with prettier](https://img.shields.io/badge/styled_with-prettier-ff69b4.svg)](https://github.com/prettier/prettier)
+
 ## Getting Started
 ```bash
 $ npm i --save morphmorph
