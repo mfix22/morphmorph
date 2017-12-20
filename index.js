@@ -25,7 +25,7 @@ const get = (key, delimiter = DEFAULTS.objDelimiter) => obj =>
     .reduce((accum, key) => (accum ? accum[key] : undefined), obj)
 
 const compose = (...fns) => (res, ...args) =>
-  fns.reverse().reduce((accum, next) => next(accum, ...args), res)
+  fns.reduceRight((accum, next) => next(accum, ...args), res)
 
 const _getMapSpec = (mapping, delimiter) =>
   (mapping.indexOf(delimiter) > -1
