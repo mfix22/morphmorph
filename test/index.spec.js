@@ -39,6 +39,37 @@ it('should be isomorphic', () => {
   expect(isomorph({}, expected)).toEqual(expected)
 })
 
+it('should not fail if key is invalid', () => {
+  const obj = {
+    user: {
+      friends: [
+        {
+          name: 'Nick'
+        }
+      ]
+    }
+  }
+  expect(Mapper.get('user.friends.1.name')(obj)).toBeUndefined()
+})
+
+it('should create an empty array for number keys', () => {
+  const obj = {}
+  const mapped = Mapper.assign('user.friends.0.name')(obj, 'Nick')
+  expect(mapped.user.friends).toBeInstanceOf(Array)
+  expect(mapped.user.friends[0].name).toBe('Nick')
+})
+
+it('should not override fields that already exist', () => {
+  const obj = {
+    user: {
+      id: 123
+    }
+  }
+  const mapped = Mapper.assign('user.name')(obj, 'Nick')
+  expect(mapped.user.id).toBe(123)
+  expect(mapped.user.name).toBe('Nick')
+})
+
 it('should work with basic string mappings', () => {
   const curr = {
     map: true,
@@ -80,6 +111,13 @@ it('should handle deep transformations', () => {
 
   expect(mapper.map(mappings, curr).here).toEqual(true)
   expect(mapper.map(mappings, curr).maybe.later.never).toEqual(false)
+})
+
+it('should not set key if undefined is returned', () => {
+  const obj = { key: true }
+  const mappings = [{ field: 'key', type: () => undefined }]
+
+  expect(mapper.map(mappings, obj)).toEqual({})
 })
 
 it('should allow you to compose a type function', () => {
@@ -152,7 +190,7 @@ it('should allow you to pass post-mapping filters', () => {
   const curr = { possiblyNull: null }
   const USE_GLOBAL_DEFAULTS = (value, field, options) => {
     if (value === null || value === undefined) {
-      return options.types && options.GLOBAL_DEFAULTS[field.type]
+      return options.GLOBAL_DEFAULTS && options.GLOBAL_DEFAULTS[field.type]
     }
     return value
   }
@@ -180,4 +218,18 @@ it('should allow you to pass post-mapping filters', () => {
   expect(postFilterMapper.map(mappings, curr).definitelyNotNull).toEqual(
     'THIS IS JUST A GLOBAL DEFAULT'
   )
+})
+
+it('should allow you to specify a type system', () => {
+  const types = {
+    bool: Boolean,
+    upper: s => s.toUpperCase()
+  }
+
+  const mapper = new Mapper({ types })
+
+  const obj = { key: 'true' }
+
+  expect(mapper.map([{ field: 'key', type: 'bool' }], obj).key).toBe(true)
+  expect(mapper.map([{ field: 'key', type: 'upper' }], obj).key).toBe('TRUE')
 })

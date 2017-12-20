@@ -63,6 +63,7 @@ class Mapper {
         _getMappingFilter(mapping, options.types),
         ...options.preFilters
       )
+
       const value = filter(
         get(sourceField, options.objDelimiter)(curr),
         mapping,
@@ -70,6 +71,7 @@ class Mapper {
         curr,
         accum
       )
+
       return value === undefined
         ? accum
         : assign(targetField, options.objDelimiter)(accum, value)
