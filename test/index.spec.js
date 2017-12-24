@@ -17,7 +17,7 @@ it('should deeply get object fields', () => {
   )
 })
 
-it('should deeply get object fields', () => {
+it('should deeply assign object fields', () => {
   const shallowObj = {
     shallow: false
   }
@@ -232,4 +232,32 @@ it('should allow you to specify a type system', () => {
 
   expect(mapper.map([{ field: 'key', type: 'bool' }], obj).key).toBe(true)
   expect(mapper.map([{ field: 'key', type: 'upper' }], obj).key).toBe('TRUE')
+})
+
+it('should be able to reduce multiple values into one', () => {
+  const obj = {
+    user: {
+      firstName: 'Mike',
+      lastName: 'Fix',
+      professionInfo: {
+        title: 'Mr',
+        occupation: 'Software Engineer'
+      }
+    }
+  }
+
+  const field = {
+    field: [
+      'user.firstName',
+      'user.lastName',
+      'user.professionInfo.title',
+      'user.professionInfo.occupation',
+      'description'
+    ],
+    type: ([name1, name2, title, occ]) =>
+      `${title}. ${name1} ${name2} is a ${occ}`
+  }
+  expect(mapper.map([field], obj).description).toBe(
+    'Mr. Mike Fix is a Software Engineer'
+  )
 })
