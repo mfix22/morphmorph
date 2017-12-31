@@ -6,7 +6,8 @@
   "scripts": {
     "precommit": "lint-staged",
     "lint": "xo",
-    "test": "jest"
+    "test": "jest",
+    "coverage": "npm test -- --silent --coverage"
   },
   "keywords": [
     "transform",
