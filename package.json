@@ -1,6 +1,6 @@
 {
   "name": "morphmorph",
-  "version": "0.0.2",
+  "version": "0.1.0",
   "description": "Mapping, filtering, transforming, and morphing for your objects",
   "main": "index.js",
   "scripts": {
