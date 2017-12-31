@@ -1,5 +1,5 @@
 # Morph Morph
-##### Isomorphic transformations. Map, transform, filter, and morph your objects
+##### Isomorphic transformations. Map, transform, filter, reduce, and morph your objects
 
 [![tested with jest](https://img.shields.io/badge/tested_with-jest-99424f.svg)](https://github.com/facebook/jest)
 [![linted with XO](https://img.shields.io/badge/linted_with_-XO-5ed9c7.svg)](https://github.com/sindresorhus/xo)
@@ -80,6 +80,37 @@ mapper.map([mapping], { id: 'U1234342'}) // -> 1234
 
 #### Function Compositions
 If you want to do function compositions the traditional way, you can use `Mapper.compose(...myFilterFunctions)`. Again it will be a right-to-left composition.
+
+### Reductions
+By specifying your `field` property as an array, you can reduce multiple values into a single one. The values will be included as the first parameter of your `type` function. The target field is specified by the last mapping in your array
+
+##### Example
+```javascript
+const response = {
+  user: {
+    firstName: 'Mike',
+    lastName: 'Fix',
+    professionInfo: {
+      title: 'Mr',
+      occupation: 'Software Engineer'
+    }
+  }
+}
+
+const mapping = {
+  field: [
+    'user.firstName',
+    'user.lastName',
+    'user.professionInfo.title',
+    'user.professionInfo.occupation',
+    'description'
+  ],
+  type: ([name1, name2, title, occ]) =>
+    `${title}. ${name1} ${name2} is a ${occ}`
+}
+
+mapper.map([mapping], response).description // -> 'Mr. Mike Fix is a Software Engineer'
+```
 
 ### Types
 You can specify a type system by passing in the `types` option:
