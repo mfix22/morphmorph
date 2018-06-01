@@ -2,6 +2,11 @@ const Mapper = require('..')
 
 const mapper = new Mapper()
 
+it('should return first value if key is undefined', () => {
+  expect(Mapper.get()(true)).toBe(true)
+  expect(Mapper.assign()(true)).toBe(true)
+})
+
 it('should deeply get object fields', () => {
   const deepObjectNesting = {
     really: {

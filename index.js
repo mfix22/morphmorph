@@ -7,22 +7,30 @@ const DEFAULTS = {
 }
 
 const createRootObj = key =>
-  isNaN(parseInt(key, 10)) ? {} : Array(parseInt(key, 10))
+  isNaN(parseInt(key, 10)) ? Object.create(null) : new Array(parseInt(key, 10))
 
-const assign = (key, delimiter = DEFAULTS.objDelimiter) => (obj, value) => {
-  key.split(delimiter).reduce((accum, key, i, array) => {
-    if (i === array.length - 1) accum[key] = value
-    else if (!accum[key]) accum[key] = createRootObj(array[i + 1])
-    return accum[key]
-  }, obj)
+const assign = (key, delimiter = DEFAULTS.objDelimiter) => {
+  const keys = key && key.split(delimiter)
+  return (obj, value) => {
+    if (keys == null) return obj
 
-  return obj
+    keys.reduce((accum, key, i, array) => {
+      if (i === array.length - 1) accum[key] = value
+      else if (!accum[key]) accum[key] = createRootObj(array[i + 1])
+      return accum[key]
+    }, obj)
+
+    return obj
+  }
 }
 
-const get = (key, delimiter = DEFAULTS.objDelimiter) => obj =>
-  key
-    .split(delimiter)
-    .reduce((accum, key) => (accum ? accum[key] : undefined), obj)
+const get = (key, delimiter = DEFAULTS.objDelimiter) => {
+  const keys = key && key.split(delimiter)
+  return obj =>
+    keys == null
+      ? obj
+      : keys.reduce((accum, key) => (accum ? accum[key] : undefined), obj)
+}
 
 const compose = (...fns) => (res, ...args) =>
   fns.reduceRight((accum, next) => next(accum, ...args), res)
@@ -63,7 +71,7 @@ class Mapper {
     this.config = Object.assign(DEFAULTS, options)
   }
 
-  map(mappings, curr, next = {}) {
+  map(mappings, curr, next = Object.create(null)) {
     const options = this.config
     return mappings.map(normalizeMapping).reduce((accum, mapping) => {
       const [sourceField, targetField] = getMapSpec(

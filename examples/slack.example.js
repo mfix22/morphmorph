@@ -21,7 +21,10 @@ const GET_USER_MAPPINGS = [
     type: (b, mapping, options, curr) =>
       1 + Number(b) + Number(curr.user.is_owner)
   },
-  { field: 'user.updated:lastUpdatedDateTime', type: v => Date(v).valueOf() },
+  {
+    field: 'user.updated:lastUpdatedDateTime',
+    type: v => new Date(v).valueOf()
+  },
   { field: 'isSlackUser', type: () => true } // Always set this field to true
 ]
 
