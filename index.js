@@ -66,6 +66,9 @@ const getMappingFilter = (mapping, types) => {
   return _ => _
 }
 
+const map = fn => x => (x.map ? x.map(fn) : fn(x))
+const keep = current => next => (next === undefined ? current : next)
+
 class Mapper {
   constructor(options) {
     this.config = Object.assign(DEFAULTS, options)
@@ -79,20 +82,16 @@ class Mapper {
         options.mapDelimiter
       )
 
-      const filter = compose(
+      const fn = compose(
+        keep(accum),
+        assign(targetField, options.objDelimiter).bind(this, accum),
         ...options.postFilters,
         getMappingFilter(mapping, options.types),
-        ...options.preFilters
+        ...options.preFilters,
+        map(field => get(field, options.objDelimiter)(curr))
       )
 
-      const source = Array.isArray(mapping.field)
-        ? sourceField.map(field => get(field, options.objDelimiter)(curr))
-        : get(sourceField, options.objDelimiter)(curr)
-
-      const value = filter(source, mapping, options, curr, accum)
-      return value === undefined
-        ? accum
-        : assign(targetField, options.objDelimiter)(accum, value)
+      return fn(sourceField, mapping, options, curr, accum)
     }, next)
   }
 }
