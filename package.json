@@ -17,8 +17,9 @@
     "declarative",
     "map"
   ],
-  "author": "",
+  "author": "mfix22",
   "license": "MIT",
+  "dependencies": {},
   "devDependencies": {
     "eslint-config-prettier": "^2.3.0",
     "husky": "^0.14.3",
@@ -41,8 +42,24 @@
       "jest"
     ],
     "rules": {
-      "eqeqeq": ["error", "smart"],
-      "no-eq-null": "off"
+      "eqeqeq": [
+        "error",
+        "smart"
+      ],
+      "no-eq-null": "off",
+      "capitalized-comments": "off"
     }
-  }
+  },
+  "directories": {
+    "example": "examples",
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mfix22/morphmorph.git"
+  },
+  "bugs": {
+    "url": "https://github.com/mfix22/morphmorph/issues"
+  },
+  "homepage": "https://github.com/mfix22/morphmorph#readme"
 }

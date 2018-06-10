@@ -1,3 +1,5 @@
+const Identity = require('./src/identity')
+
 const DEFAULTS = {
   types: {},
   objDelimiter: '.',
@@ -6,8 +8,23 @@ const DEFAULTS = {
   postFilters: []
 }
 
+const id = _ => _
+const flip = fn => a => b => fn(b, a)
+const map = fn => x => (x.map ? x.map(fn) : fn(x))
+const split = d => s => s.split(d)
+
+const compose = (...fns) => (res, ...args) =>
+  fns.reduceRight((accum, next) => next(accum, ...args), res)
+
 const createRootObj = key =>
-  isNaN(parseInt(key, 10)) ? Object.create(null) : new Array(parseInt(key, 10))
+  Identity.of(key)
+    .map(flip(parseInt)(10))
+    .chain(x =>
+      Identity.of(x)
+        .map(isNaN)
+        .map(b => (b ? Object.create(null) : Array.of(x)))
+    )
+    .join()
 
 const assign = (key, delimiter = DEFAULTS.objDelimiter) => {
   const keys = key && key.split(delimiter)
@@ -32,13 +49,12 @@ const get = (key, delimiter = DEFAULTS.objDelimiter) => {
       : keys.reduce((accum, key) => (accum ? accum[key] : undefined), obj)
 }
 
-const compose = (...fns) => (res, ...args) =>
-  fns.reduceRight((accum, next) => next(accum, ...args), res)
-
 const normalizeField = (mapping, delimiter) =>
-  (mapping.indexOf(delimiter) > -1
-    ? mapping
-    : mapping + delimiter + mapping).split(delimiter)
+  Identity.of(mapping)
+    .map(m => m.indexOf(delimiter) > -1)
+    .map(b => (b ? mapping : mapping + delimiter + mapping))
+    .map(split(delimiter))
+    .join()
 
 const getMapSpec = (mapping, delimiter) => {
   if (Array.isArray(mapping)) {
@@ -63,15 +79,14 @@ const getMappingFilter = (mapping, types) => {
     if (Object.prototype.hasOwnProperty.call(types, mapping.type))
       return types[mapping.type]
   }
-  return _ => _
+  return id
 }
 
-const map = fn => x => (x.map ? x.map(fn) : fn(x))
 const keep = current => next => (next === undefined ? current : next)
 
 class Mapper {
   constructor(options) {
-    this.config = Object.assign(DEFAULTS, options)
+    this.config = Object.assign({}, DEFAULTS, options)
   }
 
   map(mappings, curr, next = Object.create(null)) {
