@@ -10,9 +10,11 @@ const DEFAULTS = {
   postFilters: []
 }
 
-const map = fn => x => (x.map ? x.map(fn) : fn(x))
+/* --- Functional Utilities --- */
+const map = fn => x => (x.map ? x.map(fn) : fn(x)) // FIXME remove check
 const chain = fn => m => m.chain(fn)
 const join = m => m.join()
+/* ---------------------------- */
 
 const flip = fn => a => b => fn(b, a)
 const split = d => s => s.split(d)
@@ -25,32 +27,10 @@ const compose = (...fns) => (res, ...args) =>
 
 const createRootObj = compose(
   join,
-  chain(x =>
-    Identity.of(x).map(isNaN).map(b => (b ? Object.create(null) : Array.of(x)))
-  ),
-  map(int),
-  Identity.of
+  x =>
+    Identity.of(x).map(isNaN).map(b => (b ? Object.create(null) : Array.of(x))),
+  int
 )
-
-const assign = (key, delimiter = DEFAULTS.objDelimiter) => {
-  const keys = key && key.split(delimiter)
-  return (obj, value) => {
-    if (keys == null) return obj
-
-    keys.reduce((accum, key, i, array) => {
-      if (i === array.length - 1) accum[key] = value
-      else if (!accum[key]) accum[key] = createRootObj(array[i + 1])
-      return accum[key]
-    }, obj)
-
-    return obj
-  }
-}
-
-const getKey = reduce((accum, k) => (accum ? accum[k] : undefined))
-
-const get = (key, delimiter = DEFAULTS.objDelimiter) => obj =>
-  compose(maybe(obj)(getKey(obj)), map(split(delimiter)), Maybe.of)(key)
 
 const normalizeField = delimiter =>
   compose(
@@ -93,6 +73,26 @@ const getMappingFilter = (mapping, types) => {
 }
 
 const keep = current => next => (next === undefined ? current : next)
+
+const getKey = reduce((accum, k) => (accum ? accum[k] : undefined))
+
+const get = (key, delimiter = DEFAULTS.objDelimiter) => obj =>
+  compose(maybe(obj)(getKey(obj)), map(split(delimiter)), Maybe.of)(key)
+
+const assign = (key, delimiter = DEFAULTS.objDelimiter) => {
+  const keys = key && key.split(delimiter)
+  return (obj, value) => {
+    if (keys == null) return obj
+
+    keys.reduce((accum, key, i, array) => {
+      if (i === array.length - 1) accum[key] = value
+      else if (!accum[key]) accum[key] = createRootObj(array[i + 1])
+      return accum[key]
+    }, obj)
+
+    return obj
+  }
+}
 
 class Mapper {
   constructor(options) {
