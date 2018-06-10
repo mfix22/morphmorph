@@ -13,7 +13,7 @@ class Identity {
   join() {
     return this.$value
   }
-  // inspect() { return `Identity(${this.$value})`; }
+  // inspect() { return `Identity(${this.$value})` }
   // ----- Applicative Identity
   // ap(f) { return f.map(this.$value) }
 }

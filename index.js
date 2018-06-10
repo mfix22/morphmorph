@@ -1,4 +1,5 @@
 const Identity = require('./src/identity')
+const Maybe = require('./src/maybe')
 
 const DEFAULTS = {
   types: {},
@@ -41,13 +42,14 @@ const assign = (key, delimiter = DEFAULTS.objDelimiter) => {
   }
 }
 
-const get = (key, delimiter = DEFAULTS.objDelimiter) => {
-  const keys = key && key.split(delimiter)
-  return obj =>
-    keys == null
-      ? obj
-      : keys.reduce((accum, key) => (accum ? accum[key] : undefined), obj)
-}
+const get = (key, delimiter = DEFAULTS.objDelimiter) => obj =>
+  compose(
+    Maybe.maybe(obj)(keys =>
+      keys.reduce((accum, k) => (accum ? accum[k] : undefined), obj)
+    ),
+    map(split(delimiter)),
+    Maybe.of
+  )(key)
 
 const normalizeField = (mapping, delimiter) =>
   Identity.of(mapping)
