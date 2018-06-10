@@ -25,6 +25,10 @@ class Maybe {
 }
 // ----- Pointed Maybe
 Maybe.of = x => new Maybe(x)
-Maybe.maybe = v => f => m => (m.isNothing ? v : f(m.$value))
 
-module.exports = Maybe
+const maybe = v => f => m => (m.isNothing ? v : f(m.$value))
+
+module.exports = {
+  Maybe,
+  maybe
+}

@@ -21,4 +21,7 @@ class Identity {
 // ----- Pointed Identity
 Identity.of = x => new Identity(x)
 
-module.exports = Identity
+module.exports = {
+  Identity,
+  id: _ => _
+}

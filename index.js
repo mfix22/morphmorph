@@ -1,7 +1,6 @@
-const Identity = require('./src/identity')
-const Maybe = require('./src/maybe')
-
-const { maybe } = Maybe
+const { Identity, id } = require('./src/identity')
+const { Maybe, maybe } = require('./src/maybe')
+const { Right, Left, either } = require('./src/either')
 
 const DEFAULTS = {
   types: {},
@@ -11,7 +10,6 @@ const DEFAULTS = {
   postFilters: []
 }
 
-const id = _ => _
 const flip = fn => a => b => fn(b, a)
 const map = fn => x => (x.map ? x.map(fn) : fn(x))
 const split = d => s => s.split(d)
@@ -58,18 +56,20 @@ const normalizeField = (mapping, delimiter) =>
     .map(split(delimiter))
     .join()
 
-const getMapSpec = (mapping, delimiter) => {
-  if (Array.isArray(mapping)) {
-    return mapping.reduce(
-      (spec, field) => {
-        const [source, target] = normalizeField(field, delimiter)
-        return [[...spec[0], source], target]
-      },
-      [[], null]
+const getMapSpec = (mapping, delimiter) =>
+  Identity.of(mapping)
+    .map(Array.isArray)
+    .map(b => (b ? new Right(mapping) : new Left(mapping)))
+    .map(
+      either(
+        flip(normalizeField)(delimiter),
+        reduce((spec, field) => {
+          const [source, target] = normalizeField(field, delimiter)
+          return [[...spec[0], source], target]
+        })([[], null])
+      )
     )
-  }
-  return normalizeField(mapping, delimiter)
-}
+    .join()
 
 const normalizeMapping = mapping =>
   typeof mapping === 'string' ? { field: mapping } : mapping
