@@ -90,23 +90,22 @@ class Mapper {
   }
 
   map(mappings, curr, next = Object.create(null)) {
-    const options = this.config
     return mappings.map(normalizeMapping).reduce((accum, mapping) => {
       const [sourceField, targetField] = getMapSpec(
         mapping.field,
-        options.mapDelimiter
+        this.config.mapDelimiter
       )
 
       const fn = compose(
         keep(accum),
-        assign(targetField, options.objDelimiter).bind(this, accum),
-        ...options.postFilters,
-        getMappingFilter(mapping, options.types),
-        ...options.preFilters,
-        map(field => get(field, options.objDelimiter)(curr))
+        assign(targetField, this.config.objDelimiter).bind(this, accum),
+        ...this.config.postFilters,
+        getMappingFilter(mapping, this.config.types),
+        ...this.config.preFilters,
+        map(field => get(field, this.config.objDelimiter)(curr))
       )
 
-      return fn(sourceField, mapping, options, curr, accum)
+      return fn(sourceField, mapping, this.config, curr, accum)
     }, next)
   }
 }
