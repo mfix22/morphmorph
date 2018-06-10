@@ -1,6 +1,8 @@
 const Identity = require('./src/identity')
 const Maybe = require('./src/maybe')
 
+const { maybe } = Maybe
+
 const DEFAULTS = {
   types: {},
   objDelimiter: '.',
@@ -13,6 +15,8 @@ const id = _ => _
 const flip = fn => a => b => fn(b, a)
 const map = fn => x => (x.map ? x.map(fn) : fn(x))
 const split = d => s => s.split(d)
+
+const reduce = fn => zero => xs => xs.reduce(fn, zero)
 
 const compose = (...fns) => (res, ...args) =>
   fns.reduceRight((accum, next) => next(accum, ...args), res)
@@ -42,14 +46,10 @@ const assign = (key, delimiter = DEFAULTS.objDelimiter) => {
   }
 }
 
+const getKey = reduce((accum, k) => (accum ? accum[k] : undefined))
+
 const get = (key, delimiter = DEFAULTS.objDelimiter) => obj =>
-  compose(
-    Maybe.maybe(obj)(keys =>
-      keys.reduce((accum, k) => (accum ? accum[k] : undefined), obj)
-    ),
-    map(split(delimiter)),
-    Maybe.of
-  )(key)
+  compose(maybe(obj)(getKey(obj)), map(split(delimiter)), Maybe.of)(key)
 
 const normalizeField = (mapping, delimiter) =>
   Identity.of(mapping)
