@@ -49,7 +49,7 @@ const getKey = reduce((accum, k) => (accum ? accum[k] : undefined))
 const get = (key, delimiter = DEFAULTS.objDelimiter) => obj =>
   compose(maybe(obj)(getKey(obj)), map(split(delimiter)), Maybe.of)(key)
 
-const normalizeField = (mapping, delimiter) =>
+const normalizeField = delimiter => mapping =>
   Identity.of(mapping)
     .map(m => m.indexOf(delimiter) > -1)
     .map(b => (b ? mapping : mapping + delimiter + mapping))
@@ -62,9 +62,9 @@ const getMapSpec = (mapping, delimiter) =>
     .map(b => (b ? new Right(mapping) : new Left(mapping)))
     .map(
       either(
-        flip(normalizeField)(delimiter),
+        normalizeField(delimiter),
         reduce((spec, field) => {
-          const [source, target] = normalizeField(field, delimiter)
+          const [source, target] = normalizeField(delimiter)(field)
           return [[...spec[0], source], target]
         })([[], null])
       )

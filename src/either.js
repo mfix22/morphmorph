@@ -1,9 +1,3 @@
-const throwOf = key => () => {
-  throw new Error(
-    `\`of\` called on class ${key} (value) instead of Either (type)'`
-  )
-}
-
 class Either {
   constructor(x) {
     this.$value = x
@@ -30,7 +24,6 @@ class Left extends Either {
   // chain() { return this }
   // inspect() { return `Left(${this.$value})` }
 }
-Left.of = throwOf('Left')
 
 class Right extends Either {
   get isLeft() {
@@ -52,7 +45,6 @@ class Right extends Either {
   // chain(fn) { return fn(this.$value) }
   // inspect() { return `Right(${this.$value})` }
 }
-Right.of = throwOf('Right')
 
 // ----- Pointed (Either a)
 Either.of = x => new Right(x)
