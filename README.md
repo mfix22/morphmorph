@@ -192,3 +192,6 @@ Size: <1KB gzipped
 
 ## Examples
 See [/examples](https://github.com/mfix22/morphmorph/tree/master/examples) or [`test/index.spec.js`](https://github.com/mfix22/morphmorph/tree/master/test/index.spec.js) for many examples of how to use `MorphMorph`.
+
+### Thanks
+* [Mostly Adequate Guide to Functional Programming](https://mostly-adequate.gitbooks.io/) for examples and reference implementations
