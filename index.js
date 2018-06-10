@@ -10,24 +10,27 @@ const DEFAULTS = {
   postFilters: []
 }
 
-const flip = fn => a => b => fn(b, a)
 const map = fn => x => (x.map ? x.map(fn) : fn(x))
+const chain = fn => m => m.chain(fn)
+const join = m => m.join()
+
+const flip = fn => a => b => fn(b, a)
 const split = d => s => s.split(d)
+const int = flip(parseInt)(10)
 
 const reduce = fn => zero => xs => xs.reduce(fn, zero)
 
 const compose = (...fns) => (res, ...args) =>
   fns.reduceRight((accum, next) => next(accum, ...args), res)
 
-const createRootObj = key =>
-  Identity.of(key)
-    .map(flip(parseInt)(10))
-    .chain(x =>
-      Identity.of(x)
-        .map(isNaN)
-        .map(b => (b ? Object.create(null) : Array.of(x)))
-    )
-    .join()
+const createRootObj = compose(
+  join,
+  chain(x =>
+    Identity.of(x).map(isNaN).map(b => (b ? Object.create(null) : Array.of(x)))
+  ),
+  map(int),
+  Identity.of
+)
 
 const assign = (key, delimiter = DEFAULTS.objDelimiter) => {
   const keys = key && key.split(delimiter)

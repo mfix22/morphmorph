@@ -17,9 +17,7 @@ class Maybe {
   }
   // inspect() { return `Maybe(${this.$value}`; }
   // ----- Applicative Maybe
-  ap(f) {
-    return this.isNothing ? this : f.map(this.$value)
-  }
+  // ap(f) { return this.isNothing ? this : f.map(this.$value) }
   // ----- Monad Maybe
   // chain(fn) { return this.map(fn).join() }
 }
