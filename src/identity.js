@@ -16,6 +16,9 @@ class Identity {
   // inspect() { return `Identity(${this.$value})` }
   // ----- Applicative Identity
   // ap(f) { return f.map(this.$value) }
+  // ----- Traversable Identity
+  // sequence(of) { return this.traverse(of, identity) }
+  // traverse(of, fn) { return fn(this.$value).map(Identity.of) }
 }
 
 // ----- Pointed Identity

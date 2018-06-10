@@ -23,6 +23,9 @@ class Left extends Either {
   // ----- Monad (Either a)
   // chain() { return this }
   // inspect() { return `Left(${this.$value})` }
+  // ----- Traversable (Either a)
+  // sequence(of) { return of(this) }
+  // traverse(of, fn) { return of(this) }
 }
 
 class Right extends Either {
@@ -44,6 +47,9 @@ class Right extends Either {
   // ----- Monad (Either a)
   // chain(fn) { return fn(this.$value) }
   // inspect() { return `Right(${this.$value})` }
+  // ----- Traversable (Either a)
+  // sequence(of) { return this.traverse(of, identity) }
+  // traverse(of, fn) { fn(this.$value).map(Either.of) }
 }
 
 // ----- Pointed (Either a)

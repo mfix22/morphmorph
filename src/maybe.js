@@ -20,6 +20,9 @@ class Maybe {
   // ap(f) { return this.isNothing ? this : f.map(this.$value) }
   // ----- Monad Maybe
   // chain(fn) { return this.map(fn).join() }
+  // ----- Traversable Maybe
+  // sequence(of) { this.traverse(of, identity) }
+  // traverse(of, fn) { return this.isNothing ? of(this) : fn(this.$value).map(Maybe.of) }
 }
 // ----- Pointed Maybe
 Maybe.of = x => new Maybe(x)
