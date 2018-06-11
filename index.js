@@ -66,8 +66,6 @@ const getMappingFilter = (type, types) => {
   return id
 }
 
-const keep = current => next => (next === undefined ? current : next)
-
 const getKey = reduce((accum, k) => (accum ? accum[k] : undefined))
 
 const get = (key, delimiter = DEFAULTS.objDelimiter) => obj =>
@@ -101,8 +99,10 @@ class Mapper {
       )
 
       const fn = compose(
-        keep(accum),
-        assign(targetField, this.config.objDelimiter).bind(this, accum),
+        v =>
+          v === undefined
+            ? accum
+            : assign(targetField, this.config.objDelimiter)(accum, v),
         /* End user-land transforms */
         ...this.config.postFilters,
         getMappingFilter(mapping.type, this.config.types),
