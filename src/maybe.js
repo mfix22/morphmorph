@@ -1,6 +1,6 @@
 class Maybe {
   get nil() {
-    return this.$value == null
+    return this.$value === undefined
   }
   constructor(x) {
     this.$value = x

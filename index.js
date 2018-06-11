@@ -98,11 +98,11 @@ class Mapper {
         this.config.mapDelimiter
       )
 
+      const set = assign(targetField, this.config.objDelimiter)
+
       const fn = compose(
-        v =>
-          v === undefined
-            ? accum
-            : assign(targetField, this.config.objDelimiter)(accum, v),
+        maybe(accum)(set.bind(this, accum)),
+        Maybe.of,
         /* End user-land transforms */
         ...this.config.postFilters,
         getMappingFilter(mapping.type, this.config.types),
