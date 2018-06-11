@@ -17,18 +17,16 @@ const join = m => m.join()
 const compose = (...fns) => (res, ...args) =>
   fns.reduceRight((accum, next) => next(accum, ...args), res)
 
-const flip = fn => a => b => fn(b, a)
 const reduce = fn => zero => xs => xs.reduce(fn, zero)
 /* ---------------------------- */
 
 const split = d => s => s.split(d)
-const int = flip(parseInt)(10)
 
 const createRootObj = compose(
   join,
   x =>
     Identity.of(x).map(isNaN).map(b => (b ? Object.create(null) : Array.of(x))),
-  int
+  Number
 )
 
 const normalizeField = delimiter =>
