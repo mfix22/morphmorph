@@ -6,12 +6,12 @@ class Identity {
     this.chain = fn => this.map(fn).join()
     this.join = () => x
   }
-  // inspect() { return `Identity(${this.$value})` }
+  // inspect() { return `Identity(${this._})` }
   // ----- Applicative Identity
-  // ap(f) { return f.map(this.$value) }
+  // ap(f) { return f.map(this._) }
   // ----- Traversable Identity
   // sequence(of) { return this.traverse(of, identity) }
-  // traverse(of, fn) { return fn(this.$value).map(Identity.of) }
+  // traverse(of, fn) { return fn(this._).map(Identity.of) }
 }
 
 // ----- Pointed Identity
