@@ -75,6 +75,11 @@ it('should not override fields that already exist', () => {
   expect(mapped.user.name).toBe('Nick')
 })
 
+it('should not set key if undefined is returned', () => {
+  const o = {}
+  expect(mapper.map([{ field: 'key', type: () => undefined }], o)).toEqual(o)
+})
+
 it('should work with basic string mappings', () => {
   const curr = {
     map: true,

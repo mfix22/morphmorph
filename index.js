@@ -17,19 +17,17 @@ const join = m => m.join()
 const compose = (...fns) => (res, ...args) =>
   fns.reduceRight((accum, next) => next(accum, ...args), res)
 
-const flip = fn => a => b => fn(b, a)
 const reduce = fn => zero => xs => xs.reduce(fn, zero)
 /* ---------------------------- */
 
 const split = d => s => s.split(d)
-const int = flip(parseInt)(10)
 const handleArray = a => (Array.isArray(a) ? a : Identity.of(a))
 
 const createRootObj = compose(
   join,
   x =>
     Identity.of(x).map(isNaN).map(b => (b ? Object.create(null) : Array.of(x))),
-  int
+  Number
 )
 
 const normalizeField = delimiter =>
@@ -62,17 +60,12 @@ const getMapSpec = (mapping, delimiter) =>
 const normalizeMapping = mapping =>
   typeof mapping === 'string' ? { field: mapping } : mapping
 
-const getMappingFilter = (mapping, types) => {
-  if (mapping.type) {
-    if (Array.isArray(mapping.type)) return compose(...mapping.type)
-    if (typeof mapping.type === 'function') return mapping.type
-    if (Object.prototype.hasOwnProperty.call(types, mapping.type))
-      return types[mapping.type]
-  }
+const getMappingFilter = (type, types) => {
+  if (Array.isArray(type)) return compose(...type)
+  if (typeof type === 'function') return type
+  if (Object.prototype.hasOwnProperty.call(types, type)) return types[type]
   return id
 }
-
-const keep = current => next => (next === undefined ? current : next)
 
 const getKey = reduce((accum, k) => (accum ? accum[k] : undefined))
 
@@ -107,11 +100,13 @@ class Mapper {
       )
 
       const fn = compose(
-        keep(accum),
-        assign(targetField, this.config.objDelimiter).bind(this, accum),
+        v =>
+          v === undefined
+            ? accum
+            : assign(targetField, this.config.objDelimiter)(accum, v),
         /* End user-land transforms */
         ...this.config.postFilters,
-        getMappingFilter(mapping, this.config.types),
+        getMappingFilter(mapping.type, this.config.types),
         ...this.config.preFilters,
         /* Begin user-land transforms */
         m => (Array.isArray(m) ? m : join(m)), // FIXME remove check?,
