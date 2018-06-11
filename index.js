@@ -59,13 +59,10 @@ const getMapSpec = (mapping, delimiter) =>
 const normalizeMapping = mapping =>
   typeof mapping === 'string' ? { field: mapping } : mapping
 
-const getMappingFilter = (mapping, types) => {
-  if (mapping.type) {
-    if (Array.isArray(mapping.type)) return compose(...mapping.type)
-    if (typeof mapping.type === 'function') return mapping.type
-    if (Object.prototype.hasOwnProperty.call(types, mapping.type))
-      return types[mapping.type]
-  }
+const getMappingFilter = (type, types) => {
+  if (Array.isArray(type)) return compose(...type)
+  if (typeof type === 'function') return type
+  if (Object.prototype.hasOwnProperty.call(types, type)) return types[type]
   return id
 }
 
@@ -108,7 +105,7 @@ class Mapper {
         assign(targetField, this.config.objDelimiter).bind(this, accum),
         /* End user-land transforms */
         ...this.config.postFilters,
-        getMappingFilter(mapping, this.config.types),
+        getMappingFilter(mapping.type, this.config.types),
         ...this.config.preFilters,
         /* Begin user-land transforms */
         map(field => get(field, this.config.objDelimiter)(curr))
