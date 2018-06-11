@@ -5,18 +5,13 @@ class Either {
 }
 
 class Left extends Either {
-  get isLeft() {
-    return true
-  }
-  get isRight() {
-    return false
-  }
-  // ----- Functor (Either a)
-  map() {
-    return this
-  }
-  join() {
-    return this
+  constructor(x) {
+    super(x)
+    this.isLeft = true
+    this.isRight = false
+    // ----- Functor (Either a)
+    this.map = () => this
+    this.join = () => this
   }
   // ----- Applicative (Either a)
   // ap() { return this }
@@ -29,18 +24,14 @@ class Left extends Either {
 }
 
 class Right extends Either {
-  get isLeft() {
-    return false
-  }
-  get isRight() {
-    return true
-  }
-  // ----- Functor (Either a)
-  map(fn) {
-    return Either.of(fn(this.$value))
-  }
-  join() {
-    return this.$value
+  constructor(x) {
+    super(x)
+    this.$value = x
+    this.isLeft = false
+    this.isRight = true
+    // ----- Functor (Either a)
+    this.map = fn => Either.of(fn(x))
+    this.join = () => this.$value
   }
   // ----- Applicative (Either a)
   // ap(f) { return f.map(this.$value) }

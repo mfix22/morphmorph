@@ -1,17 +1,10 @@
 class Identity {
   constructor(x) {
-    this.$value = x
-  }
-  // ----- Functor Identity
-  map(fn) {
-    return Identity.of(fn(this.$value))
-  }
-  // ----- Monad Identity
-  chain(fn) {
-    return this.map(fn).join()
-  }
-  join() {
-    return this.$value
+    // ----- Functor Identity
+    this.map = fn => Identity.of(fn(x))
+    // ----- Monad Identity
+    this.chain = fn => this.map(fn).join()
+    this.join = () => x
   }
   // inspect() { return `Identity(${this.$value})` }
   // ----- Applicative Identity

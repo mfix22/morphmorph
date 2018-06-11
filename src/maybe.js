@@ -1,16 +1,10 @@
 class Maybe {
-  get nil() {
-    return this.$value === undefined
-  }
   constructor(x) {
     this.$value = x
-  }
-  // ----- Functor Maybe
-  map(fn) {
-    return this.nil ? this : Maybe.of(fn(this.$value))
-  }
-  join() {
-    return this.nil ? this : this.$value
+    this.nil = x === undefined
+    // ----- Functor Maybe
+    this.map = fn => (this.nil ? this : Maybe.of(fn(x)))
+    this.join = () => (this.nil ? this : x)
   }
   // inspect() { return `Maybe(${this.$value}`; }
   // ----- Applicative Maybe
