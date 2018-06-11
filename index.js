@@ -11,7 +11,7 @@ const DEFAULTS = {
 }
 
 /* --- Functional Utilities --- */
-const map = fn => x => (x.map ? x.map(fn) : fn(x)) // FIXME remove check
+const map = fn => x => x.map(fn)
 const chain = fn => m => m.chain(fn)
 const join = m => m.join()
 const compose = (...fns) => (res, ...args) =>
@@ -23,6 +23,7 @@ const reduce = fn => zero => xs => xs.reduce(fn, zero)
 
 const split = d => s => s.split(d)
 const int = flip(parseInt)(10)
+const handleArray = a => (Array.isArray(a) ? a : Identity.of(a))
 
 const createRootObj = compose(
   join,
@@ -113,7 +114,9 @@ class Mapper {
         getMappingFilter(mapping, this.config.types),
         ...this.config.preFilters,
         /* Begin user-land transforms */
-        map(field => get(field, this.config.objDelimiter)(curr))
+        m => (Array.isArray(m) ? m : join(m)), // FIXME remove check?,
+        map(field => get(field, this.config.objDelimiter)(curr)),
+        handleArray
       )
 
       return fn(sourceField, mapping, this.config, curr, accum)
