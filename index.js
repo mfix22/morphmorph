@@ -23,9 +23,7 @@ const reduce = fn => zero => xs => xs.reduce(fn, zero)
 const split = d => s => s.split(d)
 
 const createRootObj = compose(
-  join,
-  x =>
-    Identity.of(x).map(isNaN).map(b => (b ? Object.create(null) : Array.of(x))),
+  n => maybe(Object.create(null))(Array.of)(Maybe.of(isNaN(n) && undefined)),
   Number
 )
 
