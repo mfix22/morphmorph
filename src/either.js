@@ -11,7 +11,7 @@ class Left extends Either {
     this.isRight = false
     // ----- Functor (Either a)
     this.map = () => this
-    this.join = () => this
+    this.join = this.map
   }
   // ----- Applicative (Either a)
   // ap() { return this }
@@ -31,7 +31,7 @@ class Right extends Either {
     this.isRight = true
     // ----- Functor (Either a)
     this.map = fn => Either.of(fn(x))
-    this.join = () => this._
+    this.join = () => x
   }
   // ----- Applicative (Either a)
   // ap(f) { return f.map(this._) }
