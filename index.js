@@ -1,6 +1,7 @@
-const { Identity, id } = require('./src/identity')
 const { Maybe, maybe } = require('./src/maybe')
-const { Right, Left, either } = require('./src/either')
+const { Either, either, left } = require('./src/either')
+
+const id = _ => _
 
 const DEFAULTS = {
   types: {},
@@ -31,18 +32,18 @@ const normalizeField = delimiter =>
   compose(
     join,
     chain(m =>
-      Identity.of(m)
+      Maybe.of(m)
         .map(m => m.indexOf(delimiter) > -1)
         .map(b => (b ? m : m + delimiter + m))
         .map(split(delimiter))
     ),
-    Identity.of
+    Maybe.of
   )
 
 const getMapSpec = (mapping, delimiter) =>
-  Identity.of(mapping)
+  Maybe.of(mapping)
     .map(Array.isArray)
-    .map(b => (b ? new Right(mapping) : new Left(mapping)))
+    .map(b => (b ? Either.of(mapping) : left(mapping)))
     .map(
       either(
         normalizeField(delimiter),

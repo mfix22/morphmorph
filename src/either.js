@@ -47,10 +47,10 @@ class Right extends Either {
 Either.of = x => new Right(x)
 
 const either = (f, g) => e => (e.isLeft ? f(e._) : g(e._))
+const left = x => new Left(x)
 
 module.exports = {
   Either,
-  Right,
-  Left,
-  either
+  either,
+  left
 }
