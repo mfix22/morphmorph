@@ -90,19 +90,26 @@ class Mapper {
         Maybe.of(mapping.field)
           .chain(getMapSpec(this.config.mapDelimiter))
           .chain(([sourceField, targetField]) =>
-            compose(
-              maybe(accum)(
-                assign(targetField, this.config.objDelimiter).bind(this, accum)
-              ),
-              Maybe.of,
-              /* End user-land transforms */
-              ...this.config.postFilters,
-              getMappingFilter(mapping.type, this.config.types),
-              ...this.config.preFilters,
-              /* Begin user-land transforms */
-              map(field => get(field, this.config.objDelimiter)(curr))
-              /* Fields passed to user functions */
-            )(sourceField, mapping, this.config, curr, accum)
+            Either.of(sourceField)
+              .map(map(field => get(field, this.config.objDelimiter)(curr)))
+              .map(_ =>
+                compose(
+                  /* End user-land transforms */
+                  ...this.config.postFilters,
+                  getMappingFilter(mapping.type, this.config.types),
+                  ...this.config.preFilters
+                  /* Begin user-land transforms */
+                )(_, mapping, this.config, curr, accum)
+              )
+              .map(Maybe.of)
+              .chain(
+                maybe(accum)(
+                  assign(targetField, this.config.objDelimiter).bind(
+                    this,
+                    accum
+                  )
+                )
+              )
           ),
       next
     )

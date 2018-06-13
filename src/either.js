@@ -12,11 +12,11 @@ class Left extends Either {
     // ----- Functor (Either a)
     this.map = () => this
     this.join = this.map
+    // ----- Monad (Either a)
+    this.chain = () => this
   }
   // ----- Applicative (Either a)
   // ap() { return this }
-  // ----- Monad (Either a)
-  // chain() { return this }
   // inspect() { return `Left(${this._})` }
   // ----- Traversable (Either a)
   // sequence(of) { return of(this) }
@@ -32,11 +32,11 @@ class Right extends Either {
     // ----- Functor (Either a)
     this.map = fn => Either.of(fn(x))
     this.join = () => x
+    // ----- Monad (Either a)
+    this.chain = fn => fn(x)
   }
   // ----- Applicative (Either a)
   // ap(f) { return f.map(this._) }
-  // ----- Monad (Either a)
-  // chain(fn) { return fn(this._) }
   // inspect() { return `Right(${this._})` }
   // ----- Traversable (Either a)
   // sequence(of) { return this.traverse(of, identity) }
