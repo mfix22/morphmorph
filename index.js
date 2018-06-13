@@ -13,8 +13,8 @@ const DEFAULTS = {
 
 /* --- Functional Utilities --- */
 const map = fn => x => (x.map ? x.map(fn) : fn(x)) // FIXME remove check
-const chain = fn => m => m.chain(fn)
 const join = m => m.join()
+// const chain = fn => m => m.chain(fn)
 const compose = (...fns) => (res, ...args) =>
   fns.reduceRight((accum, next) => next(accum, ...args), res)
 
@@ -28,17 +28,11 @@ const createRootObj = compose(
   Number
 )
 
-const normalizeField = delimiter =>
-  compose(
-    join,
-    chain(m =>
-      Maybe.of(m)
-        .map(m => m.indexOf(delimiter) > -1)
-        .map(b => (b ? m : m + delimiter + m))
-        .map(split(delimiter))
-    ),
-    Maybe.of
-  )
+const normalizeField = delimiter => m =>
+  Maybe.of(m)
+    .map(m => m.indexOf(delimiter) > -1)
+    .map(b => (b ? m : m + delimiter + m))
+    .map(split(delimiter))
 
 const getMapSpec = delimiter => mapping =>
   Maybe.of(mapping)
@@ -46,11 +40,12 @@ const getMapSpec = delimiter => mapping =>
     .map(b => (b ? Either.of(mapping) : left(mapping)))
     .map(
       either(
-        normalizeField(delimiter),
-        reduce((spec, field) => {
-          const [source, target] = normalizeField(delimiter)(field)
-          return [[...spec[0], source], target]
-        })([[], null])
+        compose(join, normalizeField(delimiter)),
+        reduce((spec, field) =>
+          normalizeField(delimiter)(field)
+            .map(([source, target]) => [[...spec[0], source], target])
+            .join()
+        )([[], null])
       )
     )
 
