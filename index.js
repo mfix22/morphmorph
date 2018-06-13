@@ -40,7 +40,7 @@ const normalizeField = delimiter =>
     Maybe.of
   )
 
-const getMapSpec = (mapping, delimiter) =>
+const getMapSpec = delimiter => mapping =>
   Maybe.of(mapping)
     .map(Array.isArray)
     .map(b => (b ? Either.of(mapping) : left(mapping)))
@@ -53,7 +53,6 @@ const getMapSpec = (mapping, delimiter) =>
         })([[], null])
       )
     )
-    .join()
 
 const normalizeMapping = mapping =>
   typeof mapping === 'string' ? { field: mapping } : mapping
@@ -91,27 +90,27 @@ class Mapper {
   }
 
   map(mappings, curr, next = Object.create(null)) {
-    return mappings.map(normalizeMapping).reduce((accum, mapping) => {
-      const [sourceField, targetField] = getMapSpec(
-        mapping.field,
-        this.config.mapDelimiter
-      )
-
-      const set = assign(targetField, this.config.objDelimiter)
-
-      const fn = compose(
-        maybe(accum)(set.bind(this, accum)),
-        Maybe.of,
-        /* End user-land transforms */
-        ...this.config.postFilters,
-        getMappingFilter(mapping.type, this.config.types),
-        ...this.config.preFilters,
-        /* Begin user-land transforms */
-        map(field => get(field, this.config.objDelimiter)(curr))
-      )
-
-      return fn(sourceField, mapping, this.config, curr, accum)
-    }, next)
+    return mappings.map(normalizeMapping).reduce(
+      (accum, mapping) =>
+        Maybe.of(mapping.field)
+          .chain(getMapSpec(this.config.mapDelimiter))
+          .chain(([sourceField, targetField]) =>
+            compose(
+              maybe(accum)(
+                assign(targetField, this.config.objDelimiter).bind(this, accum)
+              ),
+              Maybe.of,
+              /* End user-land transforms */
+              ...this.config.postFilters,
+              getMappingFilter(mapping.type, this.config.types),
+              ...this.config.preFilters,
+              /* Begin user-land transforms */
+              map(field => get(field, this.config.objDelimiter)(curr))
+              /* Fields passed to user functions */
+            )(sourceField, mapping, this.config, curr, accum)
+          ),
+      next
+    )
   }
 }
 
