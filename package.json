@@ -7,7 +7,8 @@
     "precommit": "lint-staged",
     "lint": "xo",
     "test": "jest",
-    "coverage": "npm test -- --silent --coverage"
+    "coverage": "npm test -- --silent --coverage",
+    "prettier": "prettier --single-quote --no-semi --write *.js"
   },
   "keywords": [
     "transform",

@@ -64,20 +64,17 @@ const getKey = reduce((accum, k) => (accum ? accum[k] : undefined))
 const get = (key, delimiter = DEFAULTS.objDelimiter) => obj =>
   compose(maybe(obj)(getKey(obj)), map(split(delimiter)), Maybe.of)(key)
 
-const assign = (key, delimiter = DEFAULTS.objDelimiter) => {
-  const keys = key && key.split(delimiter)
-  return (obj, value) => {
-    if (keys == null) return obj
+const setKey = value =>
+  reduce((accum, key, i, array) => {
+    if (i === array.length - 1) accum[key] = value
+    else if (!accum[key]) accum[key] = createRootObj(array[i + 1])
+    return accum[key]
+  })
 
-    keys.reduce((accum, key, i, array) => {
-      if (i === array.length - 1) accum[key] = value
-      else if (!accum[key]) accum[key] = createRootObj(array[i + 1])
-      return accum[key]
-    }, obj)
-
-    return obj
-  }
-}
+const assign = (key, delimiter = DEFAULTS.objDelimiter) => (obj, value) =>
+  maybe(obj)(compose(() => obj, setKey(value)(obj), split(delimiter)))(
+    Maybe.of(key)
+  )
 
 class Mapper {
   constructor(options) {
