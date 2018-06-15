@@ -72,9 +72,11 @@ const setKey = value =>
   })
 
 const assign = (key, delimiter = DEFAULTS.objDelimiter) => (obj, value) =>
-  maybe(obj)(compose(() => obj, setKey(value)(obj), split(delimiter)))(
-    Maybe.of(key)
-  )
+  compose(
+    maybe(obj)(compose(() => obj, setKey(value)(obj))),
+    map(split(delimiter)),
+    Maybe.of
+  )(key)
 
 class Mapper {
   constructor(options) {
