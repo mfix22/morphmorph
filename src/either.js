@@ -48,9 +48,11 @@ Either.of = x => new Right(x)
 
 const either = (f, g) => e => (e.isLeft ? f(e._) : g(e._))
 const left = x => new Left(x)
+const fromNullable = a => (a === undefined ? new Left(a) : new Right(a))
 
 module.exports = {
   Either,
   either,
-  left
+  left,
+  fromNullable
 }

@@ -1,7 +1,7 @@
-const { Maybe, maybe } = require('./src/maybe')
-const { Either, either, left } = require('./src/either')
+const { Either, either, left, fromNullable } = require('./src/either')
 
 const id = _ => _
+const always = a => () => a
 
 const DEFAULTS = {
   types: {},
@@ -24,18 +24,19 @@ const reduce = fn => zero => xs => xs.reduce(fn, zero)
 const split = d => s => s.split(d)
 
 const createRootObj = compose(
-  n => maybe(Object.create(null))(Array)(Maybe.of(isNaN(n) ? undefined : n)),
+  either(Object.create, Array),
+  n => (isNaN(n) ? left(null) : Either.of(n)),
   Number
 )
 
 const normalizeField = delimiter => m =>
-  Maybe.of(m)
+  fromNullable(m)
     .map(m => m.indexOf(delimiter) > -1)
     .map(b => (b ? m : m + delimiter + m))
     .map(split(delimiter))
 
 const getMapSpec = delimiter => mapping =>
-  Maybe.of(mapping)
+  fromNullable(mapping)
     .map(Array.isArray)
     .map(b => (b ? Either.of(mapping) : left(mapping)))
     .map(
@@ -62,7 +63,11 @@ const getMappingFilter = (type, types) => {
 const getKey = reduce((accum, k) => (accum ? accum[k] : undefined))
 
 const get = (key, delimiter = DEFAULTS.objDelimiter) => obj =>
-  compose(maybe(obj)(getKey(obj)), map(split(delimiter)), Maybe.of)(key)
+  compose(
+    either(always(obj), getKey(obj)),
+    map(split(delimiter)),
+    fromNullable
+  )(key)
 
 const setKey = value =>
   reduce((accum, key, i, array) => {
@@ -73,9 +78,10 @@ const setKey = value =>
 
 const assign = (key, delimiter = DEFAULTS.objDelimiter) => (obj, value) =>
   compose(
-    maybe(obj)(compose(() => obj, setKey(value)(obj))),
+    always(obj),
+    either(id, setKey(value)(obj)),
     map(split(delimiter)),
-    Maybe.of
+    fromNullable
   )(key)
 
 class Mapper {
@@ -86,7 +92,7 @@ class Mapper {
   map(mappings, curr, next = Object.create(null)) {
     return mappings.map(normalizeMapping).reduce(
       (accum, mapping) =>
-        Maybe.of(mapping.field)
+        fromNullable(mapping.field)
           .chain(getMapSpec(this.config.mapDelimiter))
           .chain(([sourceField, targetField]) =>
             Either.of(sourceField)
@@ -100,9 +106,10 @@ class Mapper {
                   /* Begin user-land transforms */
                 )(_, mapping, this.config, curr, accum)
               )
-              .map(Maybe.of)
+              .map(fromNullable)
               .chain(
-                maybe(accum)(
+                either(
+                  always(accum),
                   assign(targetField, this.config.objDelimiter).bind(
                     this,
                     accum
