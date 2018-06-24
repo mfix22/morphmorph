@@ -1,4 +1,5 @@
 const { Either, either, left, fromNullable } = require('./src/either')
+const { List } = require('./src/list')
 
 const id = _ => _
 const always = a => () => a
@@ -12,7 +13,7 @@ const DEFAULTS = {
 }
 
 /* --- Functional Utilities --- */
-const map = fn => x => (x.map ? x.map(fn) : fn(x)) // FIXME remove check
+const map = fn => x => x.map(fn)
 const join = m => m.join()
 // const chain = fn => m => m.chain(fn)
 const compose = (...fns) => (res, ...args) =>
@@ -28,6 +29,8 @@ const createRootObj = compose(
   n => (isNaN(n) ? left(null) : Either.of(n)),
   Number
 )
+
+const handleArrays = _ => (Array.isArray(_) ? List.of(_) : Either.of(_))
 
 const normalizeField = delimiter => m =>
   fromNullable(m)
@@ -96,7 +99,9 @@ class Mapper {
           .chain(getMapSpec(this.config.mapDelimiter))
           .chain(([sourceField, targetField]) =>
             Either.of(sourceField)
+              .map(handleArrays)
               .map(map(field => get(field, this.config.objDelimiter)(curr)))
+              .map(join)
               .map(_ =>
                 compose(
                   /* End user-land transforms */
