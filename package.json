@@ -4,7 +4,6 @@
   "description": "Mapping, filtering, transforming, and morphing for your objects",
   "main": "index.js",
   "scripts": {
-    "precommit": "lint-staged",
     "lint": "xo",
     "test": "jest",
     "coverage": "npm test -- --silent --coverage",
@@ -22,12 +21,12 @@
   "license": "MIT",
   "dependencies": {},
   "devDependencies": {
-    "eslint-config-prettier": "^2.3.0",
-    "husky": "^0.14.3",
-    "jest": "^23.1.0",
-    "lint-staged": "^4.0.2",
-    "prettier": "^1.5.3",
-    "xo": "^0.21.1"
+    "eslint-config-prettier": "^3.3.0",
+    "husky": "^1.2.0",
+    "jest": "^23.6.0",
+    "lint-staged": "^8.1.0",
+    "prettier": "^1.15.3",
+    "xo": "^0.23.0"
   },
   "lint-staged": {
     "*.js": [
@@ -35,6 +34,11 @@
       "prettier --single-quote --no-semi --write",
       "git add"
     ]
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
   },
   "xo": {
     "extends": "prettier",
