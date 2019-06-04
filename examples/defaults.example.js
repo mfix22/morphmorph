@@ -14,6 +14,7 @@ const USE_GLOBAL_DEFAULTS = (value, field, options) => {
   if (value === null || value === undefined) {
     return options.types && options.GLOBAL_DEFAULTS[field.type]
   }
+
   return value
 }
 

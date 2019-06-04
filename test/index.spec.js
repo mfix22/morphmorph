@@ -39,7 +39,10 @@ it('should be isomorphic', () => {
   const get = Mapper.get(complexKey)
   const set = Mapper.assign(complexKey)
 
-  const isomorph = Mapper.compose(get, set)
+  const isomorph = Mapper.compose(
+    get,
+    set
+  )
 
   expect(isomorph({}, expected)).toEqual(expected)
 })
@@ -75,12 +78,12 @@ it('should not override fields that already exist', () => {
   expect(mapped.user.name).toBe('Nick')
 })
 
-it.each([
-  [undefined, {}],
-  [null, { key: null }]
-])('map(() => %s) => %s', (value, exp) => {
-  expect(mapper.map([{ field: 'key', type: () => value }], {})).toEqual(exp)
-})
+it.each([[undefined, {}], [null, { key: null }]])(
+  'map(() => %s) => %s',
+  (value, exp) => {
+    expect(mapper.map([{ field: 'key', type: () => value }], {})).toEqual(exp)
+  }
+)
 
 it('should work with basic string mappings', () => {
   const curr = {
@@ -135,7 +138,19 @@ it('should not set key if undefined is returned', () => {
 it('should allow you to compose a type function', () => {
   const curr = { beverage: Infinity }
 
-  const ENUM = ['☕', '🍸', '🍹', '🍵', '🥛', '🍺', '🥃', '🍼', '🍷', '🍶', '🍾']
+  const ENUM = [
+    '☕',
+    '🍸',
+    '🍹',
+    '🍵',
+    '🥛',
+    '🍺',
+    '🥃',
+    '🍼',
+    '🍷',
+    '🍶',
+    '🍾'
+  ]
 
   // Use, `Mapper.compose`, or your favorite functional library
   const bestBeverage = Mapper.compose(
@@ -204,6 +219,7 @@ it('should allow you to pass post-mapping filters', () => {
     if (value === null || value === undefined) {
       return options.GLOBAL_DEFAULTS && options.GLOBAL_DEFAULTS[field.type]
     }
+
     return value
   }
 

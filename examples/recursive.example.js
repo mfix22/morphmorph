@@ -6,6 +6,7 @@ const useArrayMapper = (array, mapping) => {
   if (mapping.type === 'array') {
     return array.map(v => mapper.map(mapping.mappings, v))
   }
+
   return array
 }
 
