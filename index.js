@@ -13,10 +13,8 @@ const DEFAULTS = {
 const compose = (...fns) => (res, ...args) =>
   fns.reduceRight((accum, next) => next(accum, ...args), res)
 
-const createRootObj = compose(
-  n => (isNaN(n) ? Object.create(null) : new Array(n)),
-  Number
-)
+const createRootObj = n =>
+  isNaN(n) ? Object.create(null) : new Array(Number(n))
 
 const normalizeField = delimiter => m => {
   if (m.indexOf(delimiter) > -1) {
