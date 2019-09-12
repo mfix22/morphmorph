@@ -78,6 +78,13 @@ class Mapper {
   constructor(options) {
     this.config = Object.assign({}, DEFAULTS, options)
     this.getMapSpec = getMapSpec(this.config.mapDelimiter)
+
+    this.mapFn = compose(
+      ...this.config.postFilters,
+      (v, m, con, c, a) =>
+        getMappingFilter(m.type, this.config.types)(v, m, con, c, a),
+      ...this.config.preFilters
+    )
   }
 
   map(mappings, curr, next = Object.create(null)) {
@@ -92,11 +99,7 @@ class Mapper {
         value = fn(sourceField)
       }
 
-      value = compose(
-        ...this.config.postFilters,
-        getMappingFilter(mapping.type, this.config.types),
-        ...this.config.preFilters
-      )(value, mapping, this.config, curr, accum)
+      value = this.mapFn(value, mapping, this.config, curr, accum)
 
       if (value === undefined) {
         return accum
