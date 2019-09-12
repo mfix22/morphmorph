@@ -89,13 +89,11 @@ class Mapper {
     return mappings.map(normalizeMapping).reduce((accum, mapping) => {
       const [sourceField, targetField] = this.getMapSpec(mapping.field)
 
-      let value
-      const fn = field => get(field, this.config.objDelimiter)(curr)
-      if (Array.isArray(sourceField)) {
-        value = sourceField.map(fn)
-      } else {
-        value = fn(sourceField)
-      }
+      const getter = field => get(field, this.config.objDelimiter)(curr)
+
+      let value = Array.isArray(sourceField)
+        ? sourceField.map(getter)
+        : getter(sourceField)
 
       value = this.mapFn(value, mapping, this.config, curr, accum)
 
