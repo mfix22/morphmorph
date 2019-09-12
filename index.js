@@ -1,8 +1,6 @@
-const { Either, either, left, fromNullable } = require('./src/either')
-const { List } = require('./src/list')
-
-const id = _ => _
-const always = a => () => a
+function id(_) {
+  return _
+}
 
 const DEFAULTS = {
   types: {},
@@ -12,46 +10,35 @@ const DEFAULTS = {
   postFilters: []
 }
 
-/* --- Functional Utilities --- */
-const map = fn => x => x.map(fn)
-const join = m => m.join()
-// const chain = fn => m => m.chain(fn)
 const compose = (...fns) => (res, ...args) =>
   fns.reduceRight((accum, next) => next(accum, ...args), res)
 
-const reduce = fn => zero => xs => xs.reduce(fn, zero)
-/* ---------------------------- */
+const createRootObj = n =>
+  isNaN(n) ? Object.create(null) : new Array(Number(n))
 
-const split = d => s => s.split(d)
+const normalizeField = delimiter => m => {
+  if (m.indexOf(delimiter) > -1) {
+    return m.split(delimiter)
+  }
 
-const createRootObj = compose(
-  either(Object.create, Array),
-  n => (isNaN(n) ? left(null) : Either.of(n)),
-  Number
-)
+  return [m, m]
+}
 
-const handleArrays = _ => (Array.isArray(_) ? List.of(_) : Either.of(_))
+const getMapSpec = delimiter => {
+  const normalizer = normalizeField(delimiter)
 
-const normalizeField = delimiter => m =>
-  fromNullable(m)
-    .map(m => m.indexOf(delimiter) > -1)
-    .map(b => (b ? m : m + delimiter + m))
-    .map(split(delimiter))
+  return mapping => {
+    if (!Array.isArray(mapping)) return normalizer(mapping)
 
-const getMapSpec = delimiter => mapping =>
-  fromNullable(mapping)
-    .map(Array.isArray)
-    .map(b => (b ? Either.of(mapping) : left(mapping)))
-    .map(
-      either(
-        compose(join, normalizeField(delimiter)),
-        reduce((spec, field) =>
-          normalizeField(delimiter)(field)
-            .map(([source, target]) => [[...spec[0], source], target])
-            .join()
-        )([[], null])
-      )
+    return mapping.reduce(
+      (spec, field) => {
+        const [source, target] = normalizer(field)
+        return [[...spec[0], source], target]
+      },
+      [[], null]
     )
+  }
+}
 
 const normalizeMapping = mapping =>
   typeof mapping === 'string' ? { field: mapping } : mapping
@@ -63,67 +50,59 @@ const getMappingFilter = (type, types) => {
   return id
 }
 
-const getKey = reduce((accum, k) => (accum ? accum[k] : undefined))
+const get = (key, delimiter = DEFAULTS.objDelimiter) => {
+  if (key == null) return id
 
-const get = (key, delimiter = DEFAULTS.objDelimiter) => obj =>
-  compose(
-    either(always(obj), getKey(obj)),
-    map(split(delimiter)),
-    fromNullable
-  )(key)
+  const spec = key.split(delimiter)
 
-const setKey = value =>
-  reduce((accum, key, i, array) => {
-    if (i === array.length - 1) accum[key] = value
-    else if (!accum[key]) accum[key] = createRootObj(array[i + 1])
-    return accum[key]
-  })
+  return obj => spec.reduce((a, k) => (a ? a[k] : undefined), obj)
+}
 
-const assign = (key, delimiter = DEFAULTS.objDelimiter) => (obj, value) =>
-  compose(
-    always(obj),
-    either(id, setKey(value)(obj)),
-    map(split(delimiter)),
-    fromNullable
-  )(key)
+const assign = (key, delimiter = DEFAULTS.objDelimiter) => {
+  if (key == null) return id
+
+  const spec = key.split(delimiter)
+  return (obj, value) => {
+    spec.reduce((accum, key, i, array) => {
+      if (i === array.length - 1) accum[key] = value
+      else if (!accum[key]) accum[key] = createRootObj(array[i + 1])
+      return accum[key]
+    }, obj)
+    return obj
+  }
+}
 
 class Mapper {
   constructor(options) {
     this.config = Object.assign({}, DEFAULTS, options)
+    this.getMapSpec = getMapSpec(this.config.mapDelimiter)
+
+    this.mapFn = compose(
+      ...this.config.postFilters,
+      (v, m, con, c, a) =>
+        getMappingFilter(m.type, this.config.types)(v, m, con, c, a),
+      ...this.config.preFilters
+    )
   }
 
   map(mappings, curr, next = Object.create(null)) {
-    return mappings.map(normalizeMapping).reduce(
-      (accum, mapping) =>
-        fromNullable(mapping.field)
-          .chain(getMapSpec(this.config.mapDelimiter))
-          .chain(([sourceField, targetField]) =>
-            Either.of(sourceField)
-              .map(handleArrays)
-              .map(map(field => get(field, this.config.objDelimiter)(curr)))
-              .map(join)
-              .map(_ =>
-                compose(
-                  /* End user-land transforms */
-                  ...this.config.postFilters,
-                  getMappingFilter(mapping.type, this.config.types),
-                  ...this.config.preFilters
-                  /* Begin user-land transforms */
-                )(_, mapping, this.config, curr, accum)
-              )
-              .map(fromNullable)
-              .chain(
-                either(
-                  always(accum),
-                  assign(targetField, this.config.objDelimiter).bind(
-                    this,
-                    accum
-                  )
-                )
-              )
-          ),
-      next
-    )
+    return mappings.map(normalizeMapping).reduce((accum, mapping) => {
+      const [sourceField, targetField] = this.getMapSpec(mapping.field)
+
+      const getter = field => get(field, this.config.objDelimiter)(curr)
+
+      let value = Array.isArray(sourceField)
+        ? sourceField.map(getter)
+        : getter(sourceField)
+
+      value = this.mapFn(value, mapping, this.config, curr, accum)
+
+      if (value === undefined) {
+        return accum
+      }
+
+      return assign(targetField, this.config.objDelimiter)(accum, value)
+    }, next)
   }
 }
 
