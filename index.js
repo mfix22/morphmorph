@@ -3,26 +3,21 @@ function id(_) {
 }
 
 const DEFAULTS = {
-  types: {},
+  types: Object.create(null),
   objDelimiter: '.',
   mapDelimiter: ':',
   preFilters: [],
   postFilters: []
 }
 
-const compose = (...fns) => (res, ...args) =>
-  fns.reduceRight((accum, next) => next(accum, ...args), res)
+const compose = (...fns) => (i, ...args) =>
+  fns.reduceRight((a, n) => n(a, ...args), i)
 
 const createRootObj = n =>
   isNaN(n) ? Object.create(null) : new Array(Number(n))
 
-const normalizeField = delimiter => m => {
-  if (m.indexOf(delimiter) > -1) {
-    return m.split(delimiter)
-  }
-
-  return [m, m]
-}
+const normalizeField = delimiter => m =>
+  m.indexOf(delimiter) > -1 ? m.split(delimiter) : [m, m]
 
 const getMapSpec = delimiter => {
   const normalizer = normalizeField(delimiter)
@@ -54,7 +49,6 @@ const get = (key, delimiter = DEFAULTS.objDelimiter) => {
   if (key == null) return id
 
   const spec = key.split(delimiter)
-
   return obj => spec.reduce((a, k) => (a ? a[k] : undefined), obj)
 }
 
@@ -74,7 +68,7 @@ const assign = (key, delimiter = DEFAULTS.objDelimiter) => {
 
 class Mapper {
   constructor(options) {
-    this.config = Object.assign({}, DEFAULTS, options)
+    this.config = Object.assign(Object.create(null), DEFAULTS, options)
     this.getMapSpec = getMapSpec(this.config.mapDelimiter)
 
     this.mapFn = compose(
